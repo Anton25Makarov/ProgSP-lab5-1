@@ -14,22 +14,26 @@ public class Drop implements Runnable {
     }
 
     public Drop(Point2D highPoint, Point2D lowPoint) {
-        thread = new Thread(this);
-        this.highPoint = highPoint;
-        this.lowPoint = lowPoint;
-        this.lowCriticalPoint = new Point2D(0, 500);
-        thread.start();
+        synchronized (this) {
+            thread = new Thread(this);
+            this.highPoint = highPoint;
+            this.lowPoint = lowPoint;
+            this.lowCriticalPoint = new Point2D(0, 500);
+            thread.start();
+        }
     }
 
     @Override
     public void run() {
-        while (highPoint.getY() < lowCriticalPoint.getY()) {
-            highPoint.setY(highPoint.getY() + 1);
-            lowPoint.setY(lowPoint.getY() + 1);
-            try {
-                thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        synchronized (this) {
+            while (highPoint.getY() < lowCriticalPoint.getY()) {
+                highPoint.setY(highPoint.getY() + 1);
+                lowPoint.setY(lowPoint.getY() + 1);
+                try {
+                    thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
 

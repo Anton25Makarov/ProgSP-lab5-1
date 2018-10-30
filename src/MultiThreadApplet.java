@@ -1,24 +1,22 @@
 import java.applet.Applet;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MultiThreadApplet extends Applet implements Runnable {
-    private static final int DROP_COUNT = 10;
     private Thread mainThread;
-    private Drop[] drops;
-    //    private Drop drop;
     private Cloud cloud;
+    private List<Drop> dropList = new ArrayList<>();
 
     @Override
     public void run() {
-
-        while (true) { //бесконечный цикл
-            repaint(); //перерисовка апплета или вызов метода paint
+        while (true) {
+            repaint();
             try {
-                mainThread.sleep(10); //приостановка апплета на 10 миллисекунл
+                mainThread.sleep(10);
             } catch (InterruptedException e) {
             }
         }
-
     }
 
     @Override
@@ -27,8 +25,9 @@ public class MultiThreadApplet extends Applet implements Runnable {
 
         drawer.drawCloud(cloud, graphics);
 
-        for (Drop drop : drops) {
+        for (Drop drop : dropList) {
             drawer.drawDrop(drop, graphics);
+
         }
     }
 
@@ -39,38 +38,6 @@ public class MultiThreadApplet extends Applet implements Runnable {
         mainThread.start();
 
         Point2D cloudStartPoint = new Point2D(50, 50);
-        cloud = new Cloud(cloudStartPoint, 100, 200);
-
-
-        int highDropY = cloudStartPoint.getY() + cloud.getHeight() / 2;
-
-
-        RandomGenerator generator = new RandomGenerator();
-        drops = new Drop[DROP_COUNT];
-        for (int i = 0; i < drops.length; i++) {
-            int DropX = generator.generateInt(cloudStartPoint.getX(),
-                    cloudStartPoint.getX() + cloud.getWidth());
-
-
-            Point2D highDropPoint = new Point2D(DropX, highDropY);
-            Point2D lowDropPoint = new Point2D(DropX, highDropY + 7);
-
-            drops[i] = new Drop(highDropPoint, lowDropPoint);
-
-
-        }
-
-
-//        drop = new Drop(new Point2D(50, 50), new Point2D(50, 60));
-
-//        drops = new Drop[DROP_COUNT];
-//        for (int i = 0; i < drops.length; i++) {
-//            drops[i] = new Drop(cloud.getStartPoint(),
-//                    new Point2D(cloud.getStartPoint().getX(), cloud.getStartPoint().getY()),
-//                    new Point2D(500, 500));
-//
-//        }
-
-
+        cloud = new Cloud(cloudStartPoint, 100, 200, dropList);
     }
 }
